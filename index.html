@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071b3b">
+<meta name="description" content="Pembukuan harian sederhana Vahn Cell untuk UMKM.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon-192.png?v=05867" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon-192.png?v=05867">
+<title>Keuangan Vahn Cell</title>
+<style>
+:root{--navy:#071b3b;--navy2:#123b70;--blue:#1d5fae;--bg:#f2f5fa;--ink:#14243a;--muted:#718096;--line:#e3e9f1;--green:#12834b;--red:#d43c46;--white:#fff;--shadow:0 8px 24px rgba(10,32,66,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(125deg,#06152f,#0c2d5b 58%,#174d86);color:#fff;padding:20px max(16px,env(safe-area-inset-right)) 18px max(16px,env(safe-area-inset-left));border-radius:0 0 24px 24px;box-shadow:0 8px 25px #061b3c30}
+.brand{display:flex;align-items:center;gap:12px}.brand img{width:48px;height:48px;border-radius:13px;box-shadow:0 4px 12px #0003}.brand h1{font-size:21px;line-height:1.1;margin:0;font-weight:850;letter-spacing:.2px}.brand p{margin:5px 0 0;color:#c8d8ef;font-size:12px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}.nav input{color:#fff;background:#ffffff14;border:1px solid #ffffff40;border-radius:10px;padding:10px;font:inherit;color-scheme:dark;min-width:155px;max-width:100%}.day-label{font-weight:800;font-size:13px;color:#e4efff;text-align:left;flex:1;min-width:130px}
+main{max-width:1200px;margin:18px auto;padding:0 14px 40px}.section-label{font-size:12px;font-weight:850;color:#63738a;text-transform:uppercase;letter-spacing:.8px;margin:18px 2px 9px}
+.summary-top{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.summary-bottom{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.metric{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px 12px;box-shadow:var(--shadow);min-width:0}.metric small{display:block;color:var(--muted);font-size:11px;font-weight:750;line-height:1.25}.metric strong{display:block;font-size:clamp(15px,3.5vw,20px);margin-top:7px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.metric.big{padding:16px}.metric.big strong{font-size:clamp(21px,5vw,29px)}.metric.big small{font-size:12px}.positive{color:var(--green)!important}.negative{color:var(--red)!important}.neutral{color:#52647b!important}.delta-note{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.35}
+.columns{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}.panel{background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);padding:13px;flex:0 0 245px;scroll-snap-align:start}.panel h3{font-size:14px;margin:0 0 4px}.panel .hint{font-size:11px;color:var(--muted);margin-bottom:12px;min-height:28px;line-height:1.35}.entry{border:1px solid #edf1f6;border-radius:10px;padding:9px;margin:8px 0}.entry-top{display:flex;align-items:center;gap:6px}.entry input[type=text]{min-width:0;flex:0 1 42%;width:42%;border:0;background:transparent;font-weight:750;color:var(--ink);font-size:12px;outline:none}.entry input.amount{min-width:0;flex:1;width:auto;margin-top:0;border:1px solid #e5eaf1;border-radius:8px;padding:9px 6px;font-size:13px;font-weight:750;color:#1c3555;outline:none}.entry input:disabled,.reason:disabled{opacity:.78}.delete{border:0;background:#fff0f0;color:#c33;border-radius:7px;width:28px;height:28px;font-size:17px;line-height:1;flex:0 0 28px}.add{width:100%;border:1px dashed #9bb4d3;background:#f4f8fd;color:#1d5794;border-radius:9px;padding:10px;font-weight:800;margin-top:7px}
+.calc{background:linear-gradient(150deg,#f5f9ff,#edf4fc);border:1px solid #dce8f7;border-radius:11px;padding:13px}.calc .calc-line{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #dce7f4;font-size:12px}.calc .calc-line:last-child{border:0}.calc b{font-variant-numeric:tabular-nums;text-align:right}.calc .grand{font-size:17px;font-weight:900;color:#123e70;padding-top:12px}.reason{width:100%;min-height:125px;resize:vertical;border:1px solid #e2e9f2;border-radius:10px;padding:11px;font:inherit;font-size:13px;line-height:1.5;outline:none}.reason:focus,.entry input:focus{border-color:#70a2dc}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.actions button{background:#fff;color:#18395f;border:1px solid #dce5f0;box-shadow:0 3px 9px #102d5010}.actions button.primary{background:#0c3970;color:#fff;border-color:#0c3970}.actions button.danger{color:#bd303a}.actions button:disabled{opacity:.45}
+.status{margin-top:12px;font-size:12px;color:#65758b;display:flex;align-items:center;gap:7px}.dot{width:8px;height:8px;border-radius:50%;background:#16a05a;display:inline-block}.locked .dot{background:#d18b19}
+.notice{font-size:11px;color:#6b7b90;line-height:1.5;margin-top:16px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#102b4e;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.2s;z-index:10}.toast.show{opacity:1}
+@media(min-width:800px){main{padding-left:22px;padding-right:22px}.summary-top{gap:14px}.summary-bottom{gap:14px}.panel{flex-basis:calc((100% - 48px)/5);min-width:205px}}
+@media(max-width:420px){header{padding-top:16px}.brand h1{font-size:19px}.nav{gap:6px}.nav input{min-width:145px}.summary-top{gap:6px}.metric{padding:11px 8px}.metric small{font-size:10px}.metric strong{font-size:14px}.summary-bottom .metric.big strong{font-size:21px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><img src="assets/icon-192.png?v=05867" alt="Logo Vahn Cell"><div><h1>VAHN CELL</h1><p>PEMBUKUAN KEUANGAN UMKM</p></div></div>
+ <div class="nav">
+  <div class="day-label" id="dayLabel">Memuat tanggal…</div>
+  <input type="date" id="datePicker" aria-label="Pilih tanggal">
+ </div>
+</header>
+<main>
+ <div class="section-label">Ringkasan keuangan</div>
+ <section class="summary-top">
+  <div class="metric"><small>Total Hari Ini</small><strong id="sumToday">Rp0</strong></div>
+  <div class="metric"><small>Tabungan Terpakai</small><strong id="sumSaving">Rp0</strong></div>
+  <div class="metric"><small>Titipan Terpakai</small><strong id="sumDeposit">Rp0</strong></div>
+ </section>
+ <section class="summary-bottom">
+  <div class="metric big"><small>TOTAL MODAL</small><strong id="sumCapital">Rp0</strong><div class="delta-note">Total hari ini dikurangi tabungan dan titipan terpakai</div></div>
+  <div class="metric big"><small>SELISIH DARI HARI SEBELUMNYA</small><strong id="sumDelta">Rp0</strong><div class="delta-note" id="deltaReason">Belum ada pembanding</div></div>
+ </section>
+ <div class="section-label">Rincian pembukuan · geser untuk melihat 5 kolom</div>
+ <section class="columns">
+  <div class="panel"><h3>1. Total Hari Ini</h3><div class="hint">Saldo dan seluruh dana yang dicatat hari ini.</div><div id="list0"></div><button class="add" data-add="0">＋ Tambah</button></div>
+  <div class="panel"><h3>2. Tabungan Terpakai</h3><div class="hint">Dana tabungan yang digunakan hari ini.</div><div id="list1"></div><button class="add" data-add="1">＋ Tambah</button></div>
+  <div class="panel"><h3>3. Titipan Terpakai</h3><div class="hint">Dana titipan yang digunakan hari ini.</div><div id="list2"></div><button class="add" data-add="2">＋ Tambah</button></div>
+  <div class="panel"><h3>4. Total Modal</h3><div class="hint">Dihitung otomatis dari tiga kolom sebelumnya.</div><div class="calc">
+   <div class="calc-line"><span>Total Hari Ini</span><b id="calc0">Rp0</b></div>
+   <div class="calc-line"><span>Tabungan Terpakai</span><b id="calc1">− Rp0</b></div>
+   <div class="calc-line"><span>Titipan Terpakai</span><b id="calc2">− Rp0</b></div>
+   <div class="calc-line grand"><span>Modal</span><b id="calcTotal">Rp0</b></div>
+  </div></div>
+  <div class="panel"><h3>5. Penyebab Selisih</h3><div class="hint" id="reasonHint">Tuliskan alasan modal bertambah atau berkurang.</div><textarea class="reason" id="reason" placeholder="Contoh: tambahan modal, pinjaman, pembelian stok, atau pengeluaran lain..."></textarea><button class="add" id="reasonUnlock" hidden>🔓 Buka Kunci untuk Mengisi</button><div class="delta-note">Alasan ini ikut disertakan dalam laporan WhatsApp dan tersimpan otomatis.</div></div>
+ </section>
+ <div class="actions">
+  <button id="copyYesterday">⧉ Salin Kemarin</button>
+  <button id="whatsapp">▣ Salin Laporan WhatsApp</button>
+  <button id="export">↓ Backup Data</button>
+  <button id="install" class="primary" hidden>＋ Pasang Aplikasi</button>
+  <button id="save" class="primary">✓ Simpan & Kunci</button>
+  <button id="unlock" class="danger" hidden>Buka Kunci</button>
+ </div>
+ <div class="status" id="status"><span class="dot"></span><span>Perubahan tersimpan otomatis di perangkat ini.</span></div>
+ <p class="notice">Data tersimpan di penyimpanan browser perangkat ini. Gunakan tombol <b>Backup Data</b> secara berkala agar data tetap aman saat berganti HP atau menghapus data browser. Untuk pemasangan dan penggunaan offline penuh, buka aplikasi melalui alamat HTTPS (misalnya GitHub Pages), lalu pilih Pasang Aplikasi / Tambahkan ke layar utama.</p>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const KEY='vahncell_finance_v1';
+const defaults=[
+ [{name:'BRI',amount:0},{name:'Mandiri',amount:0},{name:'BCA',amount:0},{name:'BNI',amount:0},{name:'BSI',amount:0},{name:'Seabank',amount:0},{name:'Superbank',amount:0}],
+ [{name:'BRI',amount:0},{name:'Mandiri',amount:0},{name:'BCA',amount:0},{name:'BNI',amount:0},{name:'BSI',amount:0},{name:'Seabank',amount:0},{name:'Superbank',amount:0}],
+ [{name:'Penitip',amount:0}]
+];
+let db=loadDB(), current=todayISO(), installPrompt=null;
+function todayISO(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function parseDate(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function shiftDate(s,n){const d=parseDate(s);d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function loadDB(){try{return JSON.parse(localStorage.getItem(KEY))||{days:{}}}catch(e){return {days:{}}}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(db));setStatus()}
+function freshFromPrevious(date){let prev=shiftDate(date,-1), source=db.days[prev];let lists=source?source.lists.map(a=>a.map(x=>({name:x.name,amount:0}))):defaults.map(a=>a.map(x=>({...x})));return {lists,reason:'',locked:false,updatedAt:null}}
+function day(date=current){if(!db.days[date])db.days[date]=freshFromPrevious(date);return db.days[date]}
+function rupiah(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0)}
+function formatNominal(n){return new Intl.NumberFormat('id-ID',{maximumFractionDigits:0}).format(Number(n)||0)}
+function num(v){return Math.max(0,Number(String(v).replace(/[^0-9]/g,''))||0)}
+function totals(d){let sums=d.lists.map(a=>a.reduce((s,x)=>s+num(x.amount),0));return {today:sums[0],saving:sums[1],deposit:sums[2],capital:sums[0]-sums[1]-sums[2]}}
+function fmtDay(date){return new Intl.DateTimeFormat('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(parseDate(date))}
+function previousCapital(date){let p=shiftDate(date,-1);return db.days[p]?totals(db.days[p]).capital:null}
+function render(){
+ const d=day(), t=totals(d), prev=previousCapital(current), delta=prev===null?null:t.capital-prev;
+ document.getElementById('datePicker').value=current;document.getElementById('datePicker').max=todayISO();document.getElementById('dayLabel').textContent=fmtDay(current);
+ document.getElementById('sumToday').textContent=rupiah(t.today);document.getElementById('sumSaving').textContent=rupiah(t.saving);document.getElementById('sumDeposit').textContent=rupiah(t.deposit);document.getElementById('sumCapital').textContent=rupiah(t.capital);
+ const de=document.getElementById('sumDelta');de.textContent=delta===null?'—':(delta>0?'+ ':'')+rupiah(delta);de.className=delta===null?'neutral':delta>0?'positive':delta<0?'negative':'neutral';
+ document.getElementById('deltaReason').textContent=delta===null?'Belum ada data hari sebelumnya':delta===0?'Tidak ada perubahan modal':(delta>0?'Modal bertambah. ':'Modal berkurang. ')+(d.reason||'Alasan belum diisi.');
+ ['calc0','calc1','calc2','calcTotal'].forEach((id,i)=>document.getElementById(id).textContent=[rupiah(t.today),'− '+rupiah(t.saving),'− '+rupiah(t.deposit),rupiah(t.capital)][i]);
+ for(let c=0;c<3;c++){const el=document.getElementById('list'+c);el.innerHTML='';d.lists[c].forEach((item,i)=>{const wrap=document.createElement('div');wrap.className='entry';const top=document.createElement('div');top.className='entry-top';const name=document.createElement('input');name.type='text';name.value=item.name;name.setAttribute('aria-label','Nama akun');name.disabled=d.locked;name.addEventListener('change',()=>{item.name=name.value.trim()||'Tanpa nama';persist()});const del=document.createElement('button');del.className='delete';del.textContent='×';del.title='Hapus baris';del.disabled=d.locked;del.onclick=()=>{if(confirm('Hapus '+item.name+'?')){d.lists[c].splice(i,1);persist();render()}};const amount=document.createElement('input');amount.className='amount';amount.inputMode='numeric';amount.placeholder='Masukkan nominal (Rp)';amount.value=item.amount?formatNominal(item.amount):'';amount.disabled=d.locked;amount.addEventListener('input',()=>{const raw=amount.value;const pos=amount.selectionStart||raw.length;const digits=raw.replace(/[^0-9]/g,'');item.amount=num(digits);const formatted=digits?formatNominal(digits):'';const before=raw.slice(0,pos).replace(/[^0-9]/g,'').length;amount.value=formatted;let caret=0,seen=0;while(caret<formatted.length&&seen<before){if(/[0-9]/.test(formatted[caret]))seen++;caret++}amount.setSelectionRange(caret,caret);updateSummaryOnly()});amount.addEventListener('change',()=>{item.amount=num(amount.value);amount.value=item.amount?formatNominal(item.amount):'';persist();render()});top.append(name,amount,del);wrap.append(top);el.append(wrap)})}
+ document.querySelectorAll('[data-add]').forEach(b=>b.disabled=d.locked);
+ const reason=document.getElementById('reason');reason.value=d.reason||'';reason.disabled=d.locked;
+ document.getElementById('reasonHint').textContent=d.locked?'Pembukuan tanggal ini terkunci. Buka kunci untuk mengisi atau mengubah alasan.':'Tuliskan alasan modal bertambah atau berkurang.';
+ document.getElementById('reasonUnlock').hidden=!d.locked;
+ document.getElementById('save').hidden=d.locked;document.getElementById('unlock').hidden=!d.locked;
+ document.getElementById('status').className='status'+(d.locked?' locked':'');document.getElementById('status').innerHTML=`<span class="dot"></span><span>${d.locked?'Pembukuan tanggal ini terkunci.':'Perubahan tersimpan otomatis di perangkat ini.'}</span>`;
+}
+function updateSummaryOnly(){const d=day(),t=totals(d),p=previousCapital(current),delta=p===null?null:t.capital-p;document.getElementById('sumToday').textContent=rupiah(t.today);document.getElementById('sumSaving').textContent=rupiah(t.saving);document.getElementById('sumDeposit').textContent=rupiah(t.deposit);document.getElementById('sumCapital').textContent=rupiah(t.capital);['calc0','calc1','calc2','calcTotal'].forEach((id,i)=>document.getElementById(id).textContent=[rupiah(t.today),'− '+rupiah(t.saving),'− '+rupiah(t.deposit),rupiah(t.capital)][i]);const de=document.getElementById('sumDelta');de.textContent=delta===null?'—':(delta>0?'+ ':'')+rupiah(delta);de.className=delta===null?'neutral':delta>0?'positive':delta<0?'negative':'neutral'}
+function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200)}
+function setStatus(){const s=document.querySelector('#status span:last-child');if(s&&!day().locked)s.textContent='Perubahan tersimpan otomatis di perangkat ini.'}
+document.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{const d=day(),c=Number(b.dataset.add);if(d.locked)return;d.lists[c].push({name:'Nama baru',amount:0});persist();render()}));
+document.getElementById('reason').addEventListener('input',e=>{const d=day();if(d.locked)return;d.reason=e.target.value;persist();});
+function go(date){if(date>todayISO()){toast('Tanggal yang akan datang belum bisa dipilih.');render();return}current=date;day();persist();render()}
+document.getElementById('datePicker').onchange=e=>{if(e.target.value)go(e.target.value)};
+document.getElementById('copyYesterday').onclick=()=>{const p=shiftDate(current,-1),src=db.days[p];if(!src){toast('Belum ada pembukuan kemarin.');return}if(day().locked){toast('Tanggal ini terkunci. Buka kunci terlebih dahulu.');return}if(!confirm('Salin nama daftar dari '+fmtDay(p)+' ke tanggal ini? Semua nominal akan diatur menjadi 0 dan alasan dikosongkan.'))return;db.days[current]={lists:src.lists.map(a=>a.map(x=>({name:x.name,amount:0}))),reason:'',locked:false,updatedAt:new Date().toISOString()};persist();render();toast('Nama daftar kemarin berhasil disalin. Nominal dikosongkan.')};
+document.getElementById('save').onclick=()=>{const d=day();d.locked=true;d.updatedAt=new Date().toISOString();persist();render();toast('Pembukuan disimpan dan dikunci.')};
+function unlockCurrentDay(){if(!confirm('Buka kunci pembukuan tanggal ini agar bisa diedit?'))return;day().locked=false;persist();render();toast('Pembukuan dapat diedit kembali. Kolom penyebab selisih sekarang bisa diisi.')}
+document.getElementById('unlock').onclick=unlockCurrentDay;
+document.getElementById('reasonUnlock').onclick=unlockCurrentDay;
+function report(){const d=day(),t=totals(d),p=previousCapital(current),delta=p===null?null:t.capital-p;let s=`*LAPORAN KEUANGAN VAHN CELL*\\n${fmtDay(current)}\\n\\n`;s+=`Total Hari Ini: ${rupiah(t.today)}\\nTabungan Terpakai: ${rupiah(t.saving)}\\nTitipan Terpakai: ${rupiah(t.deposit)}\\n*TOTAL MODAL: ${rupiah(t.capital)}*\\n`;s+=`Selisih: ${delta===null?'Belum ada pembanding':(delta>0?'+':'')+rupiah(delta)}\\n`;s+=`Alasan: ${d.reason||'-'}\\n\\n`;['Total Hari Ini','Tabungan Terpakai','Titipan Terpakai'].forEach((title,c)=>{s+=`*${c+1}. ${title}*\\n`;d.lists[c].forEach(x=>s+=`• ${x.name}: ${rupiah(x.amount)}\\n`);});return s}
+document.getElementById('whatsapp').onclick=async()=>{const text=report();try{await navigator.clipboard.writeText(text);toast('Laporan disalin. Tempelkan ke WhatsApp.')}catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.append(ta);ta.select();document.execCommand('copy');ta.remove();toast('Laporan disalin.')}};
+document.getElementById('export').onclick=()=>{const blob=new Blob([JSON.stringify({app:'Keuangan Vahn Cell',version:1,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-keuangan-vahn-cell-'+todayISO()+'.json';a.click();URL.revokeObjectURL(a.href);toast('File backup berhasil dibuat.')};
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;document.getElementById('install').hidden=false});
+document.getElementById('install').onclick=async()=>{if(!installPrompt){toast('Buka menu browser lalu pilih Tambahkan ke layar utama.');return}installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;document.getElementById('install').hidden=true};
+if('serviceWorker'in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+day();render();
+</script>
+</body></html>
